@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20240101-1
+      author: developer
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 20240101-seed-user
+      author: developer
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: "username", value: "admin" }
+              - column: { name: "password", value: "$2a$10$sT0Bd/9qPJdpcgxxdIMbWOj0kWZ32yvoAKXCbd7UeYS9nC98rjKTi" }
+              - column: { name: "role", value: "ADMIN" }

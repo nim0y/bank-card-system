@@ -1,1 +1,188 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.0.1
+info:
+  title: Bank Card System API
+  description: API для управления банковскими картами (Курсовая работа)
+  version: "1.0"
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер разработки
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: User Card API
+    description: Операции пользователя со своими картами
+  - name: Admin Card API
+    description: Администрирование всех карт системы
+  - name: Admin User Management
+    description: Управление пользователями
+
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+        - auth-controller
+      summary: Аутентификация и получение JWT
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        200:
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: string
+                description: JWT токен
+
+  /api/v1/user/cards:
+    get:
+      tags:
+        - User Card API
+      summary: Просмотр своих карт (поиск + пагинация)
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/CardStatus'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        200:
+          description: Список карт пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageCardResponseDTO'
+
+  /api/v1/user/cards/transfer:
+    post:
+      tags:
+        - User Card API
+      summary: Перевод между своими картами
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        200:
+          description: Перевод выполнен
+        400:
+          description: Недостаточно средств или неверные данные
+
+  /api/v1/admin/cards:
+    post:
+      tags:
+        - Admin Card API
+      summary: Создание новой карты администратором
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardRequest'
+      responses:
+        201:
+          description: Карта создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponseDTO'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CardStatus:
+      type: string
+      enum: [ACTIVE, BLOCKED, EXPIRED]
+
+    TransferRequest:
+      required:
+        - fromCardId
+        - toCardId
+        - amount
+      properties:
+        fromCardId:
+          type: integer
+          format: int64
+        toCardId:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          minimum: 0.01
+
+    CardResponseDTO:
+      properties:
+        id:
+          type: integer
+          format: int64
+        maskedNumber:
+          type: string
+          example: "**** **** **** 1234"
+        ownerName:
+          type: string
+        balance:
+          type: number
+        status:
+          $ref: '#/components/schemas/CardStatus'
+        expiryDate:
+          type: string
+          format: date
+
+    PageCardResponseDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardResponseDTO'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    LoginRequest:
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    CreateCardRequest:
+      required:
+        - userId
+        - cardNumber
+        - initialBalance
+      properties:
+        userId:
+          type: integer
+        cardNumber:
+          type: string
+        initialBalance:
+          type: number
