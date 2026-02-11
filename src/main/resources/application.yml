@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update # Liquibase управляет схемой, JPA только проверяет
+      ddl-auto: validate # Liquibase управляет схемой, JPA только проверяет
     show-sql: true
     properties:
       hibernate:

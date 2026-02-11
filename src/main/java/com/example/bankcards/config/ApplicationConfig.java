@@ -15,6 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Основная конфигурация компонентов безопасности:
+ * шифрование паролей, провайдер аутентификации и сервис пользователей.
+ */
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {

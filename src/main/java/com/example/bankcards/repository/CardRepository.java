@@ -14,15 +14,27 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Репозиторий для работы с банковскими картами.
+ * Предоставляет методы поиска карт по владельцу, статусу и сроку действия.
+ */
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
+    /**
+     * Поиск карт пользователя с фильтрацией по имени владельца на карте.
+     */
     Page<Card> findAllByOwnerUsernameAndOwnerNameContainingIgnoreCase(
             String username,
             String ownerName,
             Pageable pageable
     );
 
+    /**
+     * Поиск по части зашифрованного номера или имени владельца.
+     * Внимание: поиск LIKE по зашифрованному полю cardNumber может работать некорректно,
+     * так как в БД хранятся зашифрованные данные.
+     */
     @Query("SELECT c FROM Card c WHERE c.owner.username = :username " +
             "AND (LOWER(c.ownerName) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR c.cardNumber LIKE CONCAT('%', :search, '%'))")

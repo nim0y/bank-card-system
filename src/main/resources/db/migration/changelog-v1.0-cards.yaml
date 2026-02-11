@@ -2,6 +2,13 @@ databaseChangeLog:
   - changeSet:
       id: 20240101-2
       author: developer
+      preConditions:
+        - onFail: MARK_RAN  # Общий статус для всего блока
+        - not:
+            tableExists:
+              tableName: cards
+        - tableExists:      # Просто проверяем наличие, без повторного onFail
+            tableName: users
       changes:
         - createTable:
             tableName: cards

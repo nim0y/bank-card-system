@@ -9,6 +9,10 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
+/**
+ * Конфигурация OpenAPI (Swagger) для документирования API.
+ */
+
 @Configuration
 public class OpenApiConfig {
     @Bean
